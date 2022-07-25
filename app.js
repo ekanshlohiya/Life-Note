@@ -6,9 +6,7 @@ var lodash_ = require('lodash');
 const ejs = require("ejs");
 const mongoose = require("mongoose");
 
-const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui id ornare. Semper auctor neque vitae tempus quam. Sit amet cursus sit amet dictum sit amet justo. Viverra tellus in hac habitasse. Imperdiet proin fermentum leo vel orci porta. Donec ultrices tincidunt arcu non sodales neque sodales ut. Mattis molestie a iaculis at erat pellentesque adipiscing. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices vitae auctor eu augue ut lectus arcu bibendum at. Odio euismod lacinia at quis risus sed vulputate odio ut. Cursus mattis molestie a iaculis at erat pellentesque adipiscing.";
-const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
-const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rhoncus urna neque viverra justo nec ultrices. Arcu dui vivamus arcu felis bibendum. Consectetur adipiscing elit duis tristique. Risus viverra adipiscing at in tellus integer feugiat. Sapien nec sagittis aliquam malesuada bibendum arcu vitae. Consequat interdum varius sit amet mattis. Iaculis nunc sed augue lacus. Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing elit. Pulvinar elementum integer enim neque. Ultrices gravida dictum fusce ut placerat orci nulla. Mauris in aliquam sem fringilla ut morbi tincidunt. Tortor posuere ac ut consequat semper viverra nam libero.";
+const homeStartingContent = "This is the Home Page of your Daily Journal. You can see all your record listed below after adding a new content. Click the read more button next to each post for expanding it to a new page. For adding a new post press the compose button on the navigation bar. Happy writing!";
 
 const app = express();
 
@@ -17,16 +15,17 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-let blogs=[];  // empty global array to store all blog posts.
+let blogs=[];
 
-mongoose.connect("mongodb://localhost:27017/blogDB");
+// mongoose.connect("mongodb://localhost:27017/blogDB"); //connected with the database
+mongoose.connect("mongodb+srv://admin-ekansh:Test123@cluster0.nzo3z.mongodb.net/blogDB");
 
-const blogSchema = {
+const blogSchema = { //schema that will store the blog posts
   title: String,
   content: String
 };
 
-const Blog = mongoose.model("Blog", blogSchema);
+const Blog = mongoose.model("Blog", blogSchema); //wrapper of schema so that we can create and read docs from the underlying db 
 
 
 app.get("/",function(req,res){
@@ -42,38 +41,16 @@ app.get("/",function(req,res){
 
 
 
-app.get("/about",function(req,res){
-  res.render("about",{pageContent: aboutContent});
-});
-
-
-
-app.get("/contact",function(req,res){
-  res.render("contact",{pageContent: contactContent});
-});
-
-
-
 app.get("/compose",function(req,res){
   res.render("compose");
 });
 
 
-// app.post("/compose",function(req,res){
-
-//   const blogData={
-//     blogTitle: req.body.blogTitle,
-//     blogContent: req.body.blogContent
-//   }
-//   blogs.push(blogData);
-//   res.redirect("/");
-// });
-
 app.post("/compose",function(req,res){
 
   const blog = new Blog({
-    title: req.body.blogTitle,
-    content: req.body.blogContent
+    title: req.body.blogTitle, //blogTitle is the name of input field in the form present in compose.ejs which is used to tap into the value of title of the blog
+    content: req.body.blogContent 
   })
 
   blog.save(function(err){
@@ -81,9 +58,7 @@ app.post("/compose",function(req,res){
       res.redirect("/");
     }
   });
-})
-
-
+});
 
 // app.get("/post/:random",function(req,res){
 //   // console.log(req.params.random);
@@ -98,10 +73,10 @@ app.post("/compose",function(req,res){
 //       res.redirect("/");
 //     }
 //   }
-// });
+// }); 
 
 app.get("/post/:random",function(req,res){
-  const blogId = req.params.random;
+  const blogId = req.params.random; //e.g. ..../post/day-1  so blogId
 
   Blog.findOne({_id: blogId},function(err,blog){
     res.render("post",{
@@ -111,6 +86,22 @@ app.get("/post/:random",function(req,res){
   });
 });
 
+
+app.post("/delete", function(req,res){
+
+  const idDelete= req.body.button;
+  Blog.findByIdAndRemove(idDelete,function(err){
+  
+    if(!err){
+  
+      console.log("successfully deleted");
+  
+    }
+  
+    res.redirect("/");
+  
+  });
+});
 
 
 
