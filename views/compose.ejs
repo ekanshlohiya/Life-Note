@@ -1,0 +1,17 @@
+<!-- challenge 7 -->
+<%- include("partials/header") -%>
+<div class="bodycont">
+<h1>Compose</h1> 
+
+<form action="/compose" method="post">
+    <div class="form-group">
+        <label>Title</label>
+        <input class="form-control" type="text" name="blogTitle">
+        <label>Content</label>
+        <textarea class="form-control" name="blogContent" rows="6" cols="36"></textarea> 
+    </div>
+    <button class="btn btn-primary" type="submit">Post</button>
+    
+</form>
+</div>
+<%- include("partials/footer") -%>
