@@ -112,6 +112,36 @@ app.get("/logout",function(req,res){
   });
 });
 
+app.get("/post/logout",function(req,res){
+  req.logout(function(err){
+    if(!err)
+    {
+      res.redirect("/");
+    }
+});
+});
+
+app.get("/post/compose",function(req,res)
+{
+  if(req.isAuthenticated()){
+    res.render("compose");
+  }else{
+      res.redirect("/login");
+  }
+});
+
+app.get("/post/:random",function(req,res){
+  const blogId = req.params.random; //e.g. ..../post/day-1  so blogId
+
+  Blog.findOne({_id: blogId},function(err,blog){
+    res.render("post",{
+      title: blog.title,
+      content: blog.content
+    });
+  });
+});
+
+
 
 // ==========================  POST REQUESTS  ============================
 
@@ -169,18 +199,6 @@ app.post("/compose",function(req,res){
 });
 
 
-app.get("/post/:random",function(req,res){
-  const blogId = req.params.random; //e.g. ..../post/day-1  so blogId
-
-  Blog.findOne({_id: blogId},function(err,blog){
-    res.render("post",{
-      title: blog.title,
-      content: blog.content
-    });
-  });
-});
-
-
 app.post("/delete", function(req,res){
 
   const idDelete= req.body.button;
@@ -198,3 +216,4 @@ app.post("/delete", function(req,res){
 app.listen(3000, function() {
   console.log("Server started on port 3000");
 });
+
